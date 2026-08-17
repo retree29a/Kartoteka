@@ -358,7 +358,7 @@ function renderNpcs(searchTerm = '') {
         <div class="npc-title">
           ${tagsHtml}
           <h3>${npc.firstName} ${npc.lastName}</h3>
-          <p>${npc.age} лет • ${npc.gender}</p>
+          <p>${npc.age} лет</p>
         </div>
       </div>
       <div class="card-body">
@@ -405,7 +405,6 @@ formCreate.addEventListener('submit', (e) => {
     firstName: document.getElementById('create-firstname').value.trim(),
     lastName: document.getElementById('create-lastname').value.trim(),
     age: document.getElementById('create-age').value,
-    gender: document.getElementById('create-gender').value,
     birthplace: document.getElementById('create-birthplace').value.trim(),
     religion: document.getElementById('create-religion').value.trim(),
     photo: currentPhotoData,
@@ -431,7 +430,6 @@ window.openEditNpc = function(id) {
   document.getElementById('edit-firstname').value = npc.firstName;
   document.getElementById('edit-lastname').value = npc.lastName;
   document.getElementById('edit-age').value = npc.age;
-  document.getElementById('edit-gender').value = npc.gender;
   document.getElementById('edit-birthplace').value = npc.birthplace;
   document.getElementById('edit-religion').value = npc.religion || '';
   
@@ -481,7 +479,6 @@ formEdit.addEventListener('submit', (e) => {
     firstName: document.getElementById('edit-firstname').value.trim(),
     lastName: document.getElementById('edit-lastname').value.trim(),
     age: document.getElementById('edit-age').value,
-    gender: document.getElementById('edit-gender').value,
     birthplace: document.getElementById('edit-birthplace').value.trim(),
     religion: document.getElementById('edit-religion').value.trim(),
     photo: currentEditPhotoData,
@@ -559,26 +556,14 @@ formGenerate.addEventListener('submit', (e) => {
   }
 
   // Генерация остальных параметров
-  const gender = Math.random() > 0.5 ? "Мужской" : "Женский";
-  const firstName = gender === "Мужской" 
-    ? randomPick(GenerationData.maleNames) 
-    : randomPick(GenerationData.femaleNames);
-  const lastName = randomPick(GenerationData.surnames); // Фамилии в массиве мужские, для простоты не склоняем, либо можно добавить простую логику
+  const firstName = randomPick(GenerationData.maleNames);
+  const lastName = randomPick(GenerationData.surnames);
   
-  // Простая логика склонения фамилии для женщин (очень базовая)
-  let finalLastName = lastName;
-  if (gender === "Женский" && finalLastName.endsWith('в')) {
-    finalLastName += 'а';
-  } else if (gender === "Женский" && finalLastName.endsWith('н')) {
-    finalLastName += 'а';
-  }
-
   const generatedNpc = {
     id: generateId(),
     firstName: firstName,
-    lastName: finalLastName,
+    lastName: lastName,
     age: randomInt(18, 60),
-    gender: gender,
     birthplace: randomPick(GenerationData.placesOfBirth),
     religion: Math.random() > 0.3 ? randomPick(GenerationData.religions) : "Атеизм",
     photo: '', // Можно подключить случайные аватары (например API thispersondoesnotexist или RoboHash), пока оставим пустым

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Картотека НПС</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-content">
+      <h1>🗃️ Картотека Досье НПС</h1>
+      <div class="header-actions">
+        <button id="btn-open-tags" class="btn btn-secondary">🏷️ Теги</button>
+        <button id="btn-open-create" class="btn btn-primary">➕ Создать вручную</button>
+        <button id="btn-open-generate" class="btn btn-secondary">🎲 Сгенерировать</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Поиск по картотеке...">
+    </div>
+    
+    <div id="npc-grid" class="npc-grid">
+      <!-- Карточки будут добавляться сюда через JS -->
+    </div>
+  </main>
+
+  <!-- Модальное окно: Ручное создание -->
+  <div id="modal-create" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" data-modal="modal-create">&times;</span>
+      <h2>Создание нового досье</h2>
+      <form id="form-create">
+        <div class="form-group row">
+          <div class="col">
+            <label>Имя</label>
+            <input type="text" id="create-firstname" required>
+          </div>
+          <div class="col">
+            <label>Фамилия</label>
+            <input type="text" id="create-lastname" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col">
+            <label>Возраст</label>
+            <input type="number" id="create-age" min="1" max="150" required>
+          </div>
+          <div class="col">
+            <label>Пол</label>
+            <select id="create-gender" required>
+              <option value="Мужской">Мужской</option>
+              <option value="Женский">Женский</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Место рождения</label>
+          <input type="text" id="create-birthplace" required>
+        </div>
+        <div class="form-group">
+          <label>Религия</label>
+          <input type="text" id="create-religion">
+        </div>
+        <div class="form-group">
+          <label>Фото (URL или загрузка)</label>
+          <div class="file-url-group">
+            <input type="url" id="create-photo-url" placeholder="https://...">
+            <span class="file-or">или</span>
+            <input type="file" id="create-photo-file" accept="image/*">
+          </div>
+          <img id="create-photo-preview" class="photo-preview hidden" src="" alt="Preview">
+        </div>
+        
+        <div class="form-group">
+          <label>Параметры характера (через запятую)</label>
+          <textarea id="create-traits" rows="3" placeholder="Например: Доброта, Отзывчивость, Жадность"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>События из жизни (каждое с новой строки)</label>
+          <textarea id="create-records" rows="3" placeholder="Например: Отлично учился в школе..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Теги персонажа</label>
+          <div id="create-tags-container" class="tags-checkbox-container">
+            <!-- Чекбоксы тегов генерируются через JS -->
+            <span class="text-secondary" style="font-size: 13px;">Нет доступных тегов. Создайте их в управлении тегами.</span>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно: Редактирование -->
+  <div id="modal-edit" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" data-modal="modal-edit">&times;</span>
+      <h2>Редактирование досье</h2>
+      <form id="form-edit">
+        <input type="hidden" id="edit-id">
+        <div class="form-group row">
+          <div class="col">
+            <label>Имя</label>
+            <input type="text" id="edit-firstname" required>
+          </div>
+          <div class="col">
+            <label>Фамилия</label>
+            <input type="text" id="edit-lastname" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col">
+            <label>Возраст</label>
+            <input type="number" id="edit-age" min="1" max="150" required>
+          </div>
+          <div class="col">
+            <label>Пол</label>
+            <select id="edit-gender" required>
+              <option value="Мужской">Мужской</option>
+              <option value="Женский">Женский</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Место рождения</label>
+          <input type="text" id="edit-birthplace" required>
+        </div>
+        <div class="form-group">
+          <label>Религия</label>
+          <input type="text" id="edit-religion">
+        </div>
+        <div class="form-group">
+          <label>Фото (URL или загрузка)</label>
+          <div class="file-url-group">
+            <input type="url" id="edit-photo-url" placeholder="https://...">
+            <span class="file-or">или</span>
+            <input type="file" id="edit-photo-file" accept="image/*">
+          </div>
+          <img id="edit-photo-preview" class="photo-preview hidden" src="" alt="Preview">
+        </div>
+        
+        <div class="form-group">
+          <label>Параметры характера (через запятую)</label>
+          <textarea id="edit-traits" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>События из жизни (каждое с новой строки)</label>
+          <textarea id="edit-records" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Теги персонажа</label>
+          <div id="edit-tags-container" class="tags-checkbox-container">
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно: Генерация -->
+  <div id="modal-generate" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" data-modal="modal-generate">&times;</span>
+      <h2>Автоматическая генерация</h2>
+      <p class="modal-desc">Искусственный интеллект сгенерирует случайного персонажа на основе коэффициента кармы.</p>
+      
+      <form id="form-generate">
+        <div class="form-group">
+          <label>Коэффициент генерации параметров (от 0 до 100)</label>
+          <div class="range-container">
+            <span class="range-label negative">0 (Злодей)</span>
+            <input type="range" id="generate-coefficient" min="0" max="100" value="50">
+            <span class="range-label positive">100 (Святой)</span>
+          </div>
+          <p class="range-hint">Текущее значение: <strong id="coeff-value">50</strong>% позитивных черт. Выберется 10 случайных параметров.</p>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-secondary">Сгенерировать</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно: Управление тегами -->
+  <div id="modal-tags" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" data-modal="modal-tags">&times;</span>
+      <h2>Управление тегами</h2>
+      <p class="modal-desc">Создавайте теги для классификации НПС (например: Торговец, Враг, Мертв).</p>
+      
+      <form id="form-add-tag" style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <input type="text" id="new-tag-name" placeholder="Название тега..." required style="flex: 1;">
+        <input type="color" id="new-tag-color" value="#bb86fc" style="width: 50px; padding: 0; cursor: pointer; border: none; height: 40px;">
+        <button type="submit" class="btn btn-primary">Добавить</button>
+      </form>
+
+      <div class="existing-tags">
+        <label>Доступные теги:</label>
+        <div id="tags-list" class="tags-list-manage">
+          <!-- Теги будут добавляться сюда -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
